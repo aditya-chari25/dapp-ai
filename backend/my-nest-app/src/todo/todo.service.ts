@@ -16,6 +16,7 @@ export class TodoService {
     dotenv.config();
     const myPrivateKey: string = process.env.PRIVATE_KEY as string;
     const myContractKey: string = process.env.CONTRACT_ADDRESS as string;
+    console.log(myContractKey)
     this.provider = new ethers.providers.JsonRpcProvider(process.env.INFURA_API_URL);
     this.wallet = new ethers.Wallet(myPrivateKey,this.provider);
     this.contract = new ethers.Contract(myContractKey, contractAbi, this.wallet);
