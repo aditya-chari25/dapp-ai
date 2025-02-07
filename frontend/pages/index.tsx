@@ -9,6 +9,8 @@ interface Props {
 export default function Home({ initialTasks }: Props) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [newTask, setNewTask] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false); // ✅ Loading state
+
 
   const fetchTasks = async () => {
     const updatedTasks = await getAllTasks();
@@ -16,20 +18,17 @@ export default function Home({ initialTasks }: Props) {
   };
 
   const handleCreateTask = async () => {
-    try {
-        if (!newTask.trim()) {
-          alert("Task description cannot be empty!");
-          return;
-        }
-    
+        if (!newTask.trim()) return;
+        setLoading(true); // Start loading
+        try {
         await createTask(newTask);
-        setNewTask(""); // Clear input after successful creation
-    
-        await fetchTasks(); // Refresh task list
-      } catch (error) {
+        setNewTask("");
+        await fetchTasks();
+        } catch (error) {
         console.error("Error creating task:", error);
-        alert("Failed to create task. Please try again.");
-      }
+        } finally {
+        setLoading(false); // Stop loading
+        }
     };
 
   const handleUpdateTask = async (taskId: number, isDone: boolean) => {
@@ -49,12 +48,15 @@ export default function Home({ initialTasks }: Props) {
             placeholder="New task..."
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
+            disabled={loading} // Disable input while loading
+
           />
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded"
             onClick={handleCreateTask}
+            disabled={loading} // Disable button while loading
           >
-            Add
+            {loading ? "Adding..." : "Add"}
           </button>
         </div>
 

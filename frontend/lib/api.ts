@@ -1,6 +1,10 @@
 import axios from "axios";
+import dotenv from "dotenv";
 
-const API_URL = process.env.BACKEND_URL as string;
+dotenv.config();
+
+const API_URL = process.env.BACKEND_URL;
+console.log("local API url", API_URL)
 
 export interface Task {
   id: number;
@@ -10,7 +14,9 @@ export interface Task {
 
 // Create Task
 export const createTask = async (description: string) => {
-  return axios.post(`${API_URL}/todo`, { "description":description });
+  const xyz =  axios.post(`${API_URL}/todo`, { description:description });
+  console.log("response", xyz);
+  return xyz
 };
 
 // Update Task
@@ -20,6 +26,6 @@ export const updateTaskStatus = async (taskId: number, isDone: boolean) => {
 
 // Get All Tasks
 export const getAllTasks = async (): Promise<Task[]> => {
-  const response = await axios.get<Task[]>(`${API_URL}/todo`);
+  const response = await axios.get<Task[]>("http://localhost:8000/todo");
   return response.data;
 };
