@@ -23,34 +23,47 @@ export class TodoService {
   }
 
   // Create a new task
-  async createTask(description: string) {
-    const tx = await this.contract.createTask(description);
-    await tx.wait();
-    this.logger.log(`Task created: ${description}`);
-    return { message: 'Task created successfully', txHash: tx.hash };
+  async createTask(description: string, deadline: number){
+    try {
+      const tx = await this.contract.createTask(description, deadline);
+      await tx.wait(); // Wait for transaction confirmation
+      return { message: "Task created successfully!", transactionHash: tx.hash };
+    } catch (error) {
+      console.error("Error creating task:", error);
+      throw new Error("Failed to create task.");
+    }
   }
 
   // Update task status
-  async updateTaskStatus(taskId: number, isDone: boolean) {
-    const tx = await this.contract.updateTaskStatus(taskId, isDone);
-    await tx.wait();
-    this.logger.log(`Task ${taskId} updated to ${isDone ? 'done' : 'not done'}`);
-    return { message: 'Task updated successfully', txHash: tx.hash };
+  async deleteTask(taskId: number){
+    try {
+      const tx = await this.contract.completeTask(taskId);
+      await tx.wait(); // Wait for transaction confirmation
+      return { message: `Task ${taskId} deleted successfully!`, transactionHash: tx.hash };
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      throw new Error("Failed to delete task.");
+    }
   }
 
-  // Get a specific task
-  async getTask(taskId: number) {
-    const task = await this.contract.getTask(taskId);
-    return { id: taskId, description: task[0], isDone: task[1] };
-  }
-
-  // Get all tasks
-  async getAllTasks() {
-    const [descriptions, statuses] = await this.contract.getAllTasks();
-    return descriptions.map((desc, index) => ({
-      id: index,
-      description: desc,
-      isDone: statuses[index],
-    }));
+  async getAllTasks(){
+    try {
+      const tasks = await this.contract.getAllTasks();
+      return tasks.map((task) => ({
+        id: Number(task.id),
+        description: task.description,
+        isDone: task.isDone,
+        deadline: Number(task.deadline),
+      }));
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      throw new Error("Failed to fetch tasks.");
+    }
   }
 }
+  
+  // ✅ Create a New Task
+
+
+  // ✅ Get All Task
+  // ✅ Mark Task as Done & Remove from Blo

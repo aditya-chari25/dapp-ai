@@ -1,39 +1,42 @@
-import { useState } from "react";
-import { createTask, updateTaskStatus, getAllTasks, Task } from "../lib/api";
-import { GetServerSideProps } from "next";
+import { useEffect, useState } from "react";
+import { createTask, getAllTasks, deleteTask, Task } from "../lib/api";
 
-interface Props {
-  initialTasks: Task[];
-}
-
-export default function Home({ initialTasks }: Props) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+export default function Home() {
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false); // ✅ Loading state
-
+  const [deadline, setDeadline] = useState<string>(""); // ✅ Store deadline
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchTasks = async () => {
-    const updatedTasks = await getAllTasks();
-    setTasks(updatedTasks);
+    setLoading(true);
+    try {
+      const updatedTasks = await getAllTasks();
+      setTasks(updatedTasks);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // ✅ Convert deadline to UNIX timestamp & send task
   const handleCreateTask = async () => {
-        if (!newTask.trim()) return;
-        setLoading(true); // Start loading
-        try {
-        await createTask(newTask);
-        setNewTask("");
-        await fetchTasks();
-        } catch (error) {
-        console.error("Error creating task:", error);
-        } finally {
-        setLoading(false); // Stop loading
-        }
-    };
+    if (!newTask.trim() || !deadline.trim()) return;
 
-  const handleUpdateTask = async (taskId: number, isDone: boolean) => {
-    await updateTaskStatus(taskId, isDone);
-    fetchTasks();
+    const unixDeadline = Math.floor(new Date(deadline).getTime() / 1000); // ✅ Convert date to UNIX
+    console.log(unixDeadline);
+
+    setLoading(true);
+    try {
+      await createTask(newTask, unixDeadline);
+      setNewTask("");
+      setDeadline("");
+      await fetchTasks();
+    } catch (error) {
+      console.error("Error creating task:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,41 +44,55 @@ export default function Home({ initialTasks }: Props) {
       <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold mb-4">To-Do List</h1>
 
-        <div className="flex gap-2 mb-4">
+        {/* ✅ Show Loader */}
+        {loading && <p className="text-center text-blue-500">Loading...</p>}
+
+        <div className="flex flex-col gap-2 mb-4">
           <input
             type="text"
-            className="border p-2 flex-grow rounded"
+            className="border p-2 rounded"
             placeholder="New task..."
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
-            disabled={loading} // Disable input while loading
-
+            disabled={loading}
           />
+
+          {/* ✅ Input for Deadline Date & Time */}
+          <input
+            type="datetime-local"
+            className="border p-2 rounded"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+            disabled={loading}
+          />
+
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded"
             onClick={handleCreateTask}
-            disabled={loading} // Disable button while loading
+            disabled={loading}
           >
-            {loading ? "Adding..." : "Add"}
+            {loading ? "Adding..." : "Add Task"}
           </button>
         </div>
 
+        <button onClick={fetchTasks}>Get All Tasks</button>
         <ul>
           {tasks.map((task) => (
             <li
               key={task.id}
               className="flex justify-between items-center bg-gray-200 p-2 mb-2 rounded"
             >
-              <span className={task.isDone ? "line-through" : ""}>
-                {task.description}
+              <span>{task.description}</span>
+              <span className="text-sm text-gray-500">
+                {/* ✅ Convert UNIX to readable format */}
+                {new Date(task.deadline * 1000).toLocaleString()}
               </span>
               <button
-                className={`px-4 py-1 rounded ${
-                  task.isDone ? "bg-red-500" : "bg-green-500"
-                } text-white`}
-                onClick={() => handleUpdateTask(task.id, !task.isDone)}
+                className="bg-red-500 text-white px-4 py-1 rounded"
+                onClick={() => deleteTask(task.id)}
+                disabled={loading}
               >
-                {task.isDone ? "Undo" : "Done"}
+                {loading ? "Deleting..." : "Done"}
               </button>
             </li>
           ))}
@@ -84,9 +101,3 @@ export default function Home({ initialTasks }: Props) {
     </div>
   );
 }
-
-// ✅ Use `getServerSideProps` to fetch tasks before rendering the page
-export const getServerSideProps: GetServerSideProps = async () => {
-  const initialTasks = await getAllTasks();
-  return { props: { initialTasks } };
-};

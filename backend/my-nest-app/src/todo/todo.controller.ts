@@ -1,27 +1,25 @@
-import { Controller, Get, Post, Patch, Body, Param, ParseIntPipe } from '@nestjs/common';
-import { TodoService } from './todo.service';
+import { Controller, Get, Post, Delete, Body, Param } from "@nestjs/common";
+import { TodoService } from "./todo.service";
 
-@Controller('todo')
+@Controller("todo")
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
+  // ✅ Create a New Task
   @Post()
-  async createTask(@Body('description') description: string) {
-    return this.todoService.createTask(description);
+  async createTask(@Body() body: { description: string; deadline: number }) {
+    return this.todoService.createTask(body.description, body.deadline);
   }
 
-  @Patch(':id')
-  async updateTaskStatus(@Param('id', ParseIntPipe) id: number, @Body('isDone') isDone: boolean) {
-    return this.todoService.updateTaskStatus(id, isDone);
-  }
-
-  @Get(':id')
-  async getTask(@Param('id', ParseIntPipe) id: number) {
-    return this.todoService.getTask(id);
-  }
-
+  // ✅ Get All Tasks
   @Get()
   async getAllTasks() {
     return this.todoService.getAllTasks();
+  }
+
+  // ✅ Delete a Task (Mark as Done)
+  @Delete(":taskId")
+  async deleteTask(@Param("taskId") taskId: string) {
+    return this.todoService.deleteTask(Number(taskId));
   }
 }

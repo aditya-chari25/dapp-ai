@@ -2,9 +2,27 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "completeTask",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "string",
 				"name": "_description",
 				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_deadline",
+				"type": "uint256"
 			}
 		],
 		"name": "createTask",
@@ -18,74 +36,81 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "taskId",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "TaskCompleted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "id",
 				"type": "uint256"
 			},
 			{
 				"indexed": false,
-				"internalType": "bool",
-				"name": "isDone",
-				"type": "bool"
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "deadline",
+				"type": "uint256"
 			}
 		],
-		"name": "TaskUpdated",
+		"name": "TaskCreated",
 		"type": "event"
 	},
 	{
+		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": false,
 				"internalType": "uint256",
-				"name": "_taskId",
+				"name": "id",
 				"type": "uint256"
-			},
-			{
-				"internalType": "bool",
-				"name": "_isDone",
-				"type": "bool"
 			}
 		],
-		"name": "updateTaskStatus",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
+		"name": "TaskDeleted",
+		"type": "event"
 	},
 	{
 		"inputs": [],
 		"name": "getAllTasks",
 		"outputs": [
 			{
-				"internalType": "string[]",
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "isDone",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "deadline",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct TodoList.Task[]",
 				"name": "",
-				"type": "string[]"
-			},
-			{
-				"internalType": "bool[]",
-				"name": "",
-				"type": "bool[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_taskId",
-				"type": "uint256"
-			}
-		],
-		"name": "getTask",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			},
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -93,7 +118,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "getTotalTasks",
+		"name": "taskCount",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -115,6 +140,11 @@
 		"name": "tasks",
 		"outputs": [
 			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
 				"internalType": "string",
 				"name": "description",
 				"type": "string"
@@ -123,6 +153,11 @@
 				"internalType": "bool",
 				"name": "isDone",
 				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "deadline",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
