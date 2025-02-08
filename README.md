@@ -37,3 +37,5 @@ Deploy the Smart Contract through Remix IDE, I have used Holesky Testnet for run
 Install [https://www.nomic.ai/gpt4all](GPT4All) locally in your system and install model LLama 3.2.1B Instruct for running the AI Chatbot <br>
 And in Settings Enable Local API Server in GPT4All and runs in Port 4891
 
+Project Image:-
+![Project Image](https://github.com/aditya-chari25/dapp-ai/blob/main/assets/Screenshot%202025-02-08%20at%201.46.50%E2%80%AFPM.png)
