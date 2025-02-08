@@ -33,3 +33,7 @@ CONTRACT_ADDRESS=<"your-smart-contract-address">
 PORT=8000
 ```
 Deploy the Smart Contract through Remix IDE, I have used Holesky Testnet for running the Smart Contract
+
+Install [https://www.nomic.ai/gpt4all](GPT4All) locally in your system and install model LLama 3.2.1B Instruct for running the AI Chatbot <br>
+And in Settings Enable Local API Server in GPT4All
+
