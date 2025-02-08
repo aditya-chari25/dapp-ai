@@ -159,7 +159,6 @@ export default function Home() {
 
         {response && (
           <div className="mt-4 p-3 bg-gray-200 rounded-lg">
-            <p className="font-semibold">AI Response:</p>
             <p className="text-gray-900">{response}</p>
           </div>
         )}
