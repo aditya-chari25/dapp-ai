@@ -16,9 +16,20 @@ cd frontend/
 npm i
 npm run dev
 ```
+In frontend include .env.local which will have the Backend URL
+```bash
+BACKEND_URL=http://localhost:8000
+```
 Then install the backend repositories and run the Nest Application
 ```bash
 cd backend/my-nest-app
 npm i
+```
+In Backend/my-nest-app there'll be URL for Holesky testnet, PrivateKey, Smart Contract Address and Port Number:-
+```bash
+INFURA_API_URL="Your-testnet-url"
+PRIVATE_KEY=<"your-private-key">
+CONTRACT_ADDRESS=<"your-smart-contract-address">
+PORT=8000
 ```
 Deploy the Smart Contract through Remix IDE, I have used Holesky Testnet for running the Smart Contract
