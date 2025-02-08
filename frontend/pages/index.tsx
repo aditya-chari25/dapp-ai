@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createTask, getAllTasks, deleteTask, Task } from "../lib/api";
 import tailwindConfig from "@/tailwind.config";
+import "../app/globals.css";
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -8,8 +9,9 @@ export default function Home() {
   const [response, setResponse] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [newTask, setNewTask] = useState<string>("");
-  const [deadline, setDeadline] = useState<string>(""); // ✅ Store deadline
+  const [deadline, setDeadline] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [del, setDel] = useState<boolean>(false);
 
   const sendMessage = async () => {
     if (!message.trim()) return;
@@ -50,11 +52,17 @@ export default function Home() {
     }
   };
 
-  // ✅ Convert deadline to UNIX timestamp & send task
+  const handleDeleteTask = async(id: number)=>{
+    setDel(true);
+    await deleteTask(id);
+    setDel(false);
+    await fetchTasks();
+  }
+
   const handleCreateTask = async () => {
     if (!newTask.trim() || !deadline.trim()) return;
 
-    const unixDeadline = Math.floor(new Date(deadline).getTime() / 1000); // ✅ Convert date to UNIX
+    const unixDeadline = Math.floor(new Date(deadline).getTime() / 1000);
     console.log(unixDeadline);
 
     setLoading(true);
@@ -71,9 +79,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-100 flex flex-row gap-8 items-center justify-center">
       <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-4">Task Management List</h1>
+        <h1 className="text-2xl text-stone-950 font-bold mb-4">Task Management List</h1>
 
         {/* ✅ Show Loader */}
         {loading && <p className="text-center text-blue-500">Loading...</p>}
@@ -81,17 +89,16 @@ export default function Home() {
         <div className="flex flex-col gap-2 mb-4">
           <input
             type="text"
-            className="border p-2 rounded"
+            className="border p-2 rounded placeholder-stone-950  text-gray-900"
             placeholder="New task..."
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             disabled={loading}
           />
 
-          {/* ✅ Input for Deadline Date & Time */}
           <input
             type="datetime-local"
-            className="border p-2 rounded"
+            className="border p-2 rounded placeholder-stone-950 text-gray-900"
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
             disabled={loading}
@@ -106,34 +113,34 @@ export default function Home() {
           </button>
         </div>
 
-        <button onClick={fetchTasks}>Get All Tasks</button>
-        <ul>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded"
+            disabled={loading} onClick={fetchTasks}>Get All Tasks</button>
+        <ul> 
           {tasks.map((task) => (
             <li
               key={task.id}
               className="flex justify-between items-center bg-gray-200 p-2 mb-2 rounded"
             >
-              <span>{task.description}</span>
+              <span className="text-stone-500">{task.description}</span>
               <span className="text-sm text-gray-500">
-                {/* ✅ Convert UNIX to readable format */}
                 {new Date(task.deadline * 1000).toLocaleString()}
               </span>
               <button
                 className="bg-red-500 text-white px-4 py-1 rounded"
-                onClick={() => deleteTask(task.id)}
+                onClick={() => handleDeleteTask(task.id)}
                 disabled={loading}
               >
-                {loading ? "Deleting..." : "Done"}
+                {del ? "Deleting" : "Not Completed"}
               </button>
             </li>
           ))}
         </ul>
       </div>
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h1 className="text-2xl font-bold text-center mb-4">Suggestions for Task Prioritisation</h1>
+        <h1 className="text-2xl text-stone-950 font-bold text-center mb-4">Suggestions for Task Prioritisation</h1>
 
         <textarea
-          className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
+          className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300 text-gray-900"
           rows={4}
           placeholder="Type your message..."
           value={message}
@@ -153,7 +160,7 @@ export default function Home() {
         {response && (
           <div className="mt-4 p-3 bg-gray-200 rounded-lg">
             <p className="font-semibold">AI Response:</p>
-            <p>{response}</p>
+            <p className="text-gray-900">{response}</p>
           </div>
         )}
       </div>
