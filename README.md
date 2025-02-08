@@ -25,7 +25,7 @@ Then install the backend repositories and run the Nest Application
 cd backend/my-nest-app
 npm i
 ```
-In Backend/my-nest-app there'll be URL for Holesky testnet, PrivateKey, Smart Contract Address and Port Number:-
+In Backend/my-nest-app there'll be .env file for URL of Holesky testnet, PrivateKey, Smart Contract Address and Port Number:-
 ```bash
 INFURA_API_URL="Your-testnet-url"
 PRIVATE_KEY=<"your-private-key">
