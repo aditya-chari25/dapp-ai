@@ -1,11 +1,42 @@
 import { useEffect, useState } from "react";
 import { createTask, getAllTasks, deleteTask, Task } from "../lib/api";
+import tailwindConfig from "@/tailwind.config";
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [message, setMessage] = useState<string>("");
+  const [response, setResponse] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [newTask, setNewTask] = useState<string>("");
   const [deadline, setDeadline] = useState<string>(""); // ✅ Store deadline
   const [loading, setLoading] = useState<boolean>(false);
+
+  const sendMessage = async () => {
+    if (!message.trim()) return;
+
+    setLoading(true);
+    setResponse(null);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setResponse(data.response);
+      } else {
+        setError(data.error || "Something went wrong.");
+      }
+    } catch (err) {
+      setError("Failed to connect to the server.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -42,7 +73,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-4">To-Do List</h1>
+        <h1 className="text-2xl font-bold mb-4">Task Management List</h1>
 
         {/* ✅ Show Loader */}
         {loading && <p className="text-center text-blue-500">Loading...</p>}
@@ -97,6 +128,34 @@ export default function Home() {
             </li>
           ))}
         </ul>
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+        <h1 className="text-2xl font-bold text-center mb-4">Suggestions for Task Prioritisation</h1>
+
+        <textarea
+          className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
+          rows={4}
+          placeholder="Type your message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+
+        <button
+          onClick={sendMessage}
+          className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg mt-2 disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Send"}
+        </button>
+
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+
+        {response && (
+          <div className="mt-4 p-3 bg-gray-200 rounded-lg">
+            <p className="font-semibold">AI Response:</p>
+            <p>{response}</p>
+          </div>
+        )}
       </div>
     </div>
   );
