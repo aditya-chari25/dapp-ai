@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createTask, getAllTasks, deleteTask, Task } from "../lib/api";
-import tailwindConfig from "@/tailwind.config";
 import "../app/globals.css";
 
 export default function Home() {
@@ -34,7 +33,7 @@ export default function Home() {
         setError(data.error || "Something went wrong.");
       }
     } catch (err) {
-      setError("Failed to connect to the server.");
+      setError("Failed to connect to the server.",);
     } finally {
       setLoading(false);
     }
